@@ -1,8 +1,10 @@
-const mongoose=require("mongoose");
-const Schema=mongoose.Schema;
-const userSchema=new Schema({
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+const userSchema = new Schema({
+    googleId: { type: String, unique: true, sparse: true }, // Only for Google users
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, required: function () { return !this.googleId; } }, // Password required only if no Google ID
     role: { type: String, enum: ["player", "admin", "coach", "viewer"], default: "player" },
     name: { type: String },
     phone: { type: String },
@@ -12,7 +14,6 @@ const userSchema=new Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
+const User = mongoose.model("User", userSchema);
 
-const User=mongoose.model("User",userSchema);
-
-module.exports=User;
+module.exports = User;
