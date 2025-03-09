@@ -10,7 +10,4 @@ router.get("/google", passport.authenticate("google", { scope: ["profile", "emai
 //  Google OAuth callback (handled in controller)
 router.get("/google/callback", passport.authenticate("google", { session: false }), googleAuthSuccess);
 
-//  Logout (handled in controller)
-router.post("/logout", authController.logout);
-
 module.exports = router;

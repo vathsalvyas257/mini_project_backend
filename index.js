@@ -5,9 +5,11 @@ const passport = require("./config/passport");
 const authRoutes = require("./routes/authRoutes");
 const googleAuthRoutes = require("./routes/googleAuthRoutes");
 const cookieParser = require("cookie-parser");
-const authMiddleware = require("./middlewares/authMiddleware");
-const roleMiddleware=require("./middlewares/roleMiddleware");
+const authenticate = require("./middlewares/authMiddleware");
+const authorize=require("./middlewares/roleMiddleware");
 const cors = require("cors");
+const coachRoutes=require("./routes/coachRoutes");
+const adminRoutes=require("./routes/adminRoutes");
 
 dotenv.config(); // Load environment variables
 
@@ -27,11 +29,13 @@ app.use(cookieParser()); // Parse cookies
 app.use(passport.initialize()); // Initialize Passport.js
 
 //  Routes
-app.use("/auth", authRoutes);
-app.use("/auth", googleAuthRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/auth", googleAuthRoutes);
+app.use("/api/coach",coachRoutes);
+app.use("/api/admin",adminRoutes);
 
 //  Protected Route
-app.get("/profile", authMiddleware,roleMiddleware(["admin"]),(req, res) => {
+app.get("/profile", authenticate,authorize(["admin"]),(req, res) => {
     res.send("hello profile with protected");
 });
 
