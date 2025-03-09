@@ -5,7 +5,7 @@ const userSchema = new Schema({
     googleId: { type: String, unique: true, sparse: true }, // Only for Google users
     email: { type: String, required: true, unique: true },
     password: { type: String, required: function () { return !this.googleId; } }, // Password required only if no Google ID
-    role: { type: String, enum: ["player", "admin", "coach", "viewer"], default: "player" },
+    role: { type: String, enum: ["admin","player","organizer", "coach" ], default: "player" },
     name: { type: String },
     phone: { type: String },
     dob: { type: Date },

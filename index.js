@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authRoutes");
 const googleAuthRoutes = require("./routes/googleAuthRoutes");
 const cookieParser = require("cookie-parser");
 const authMiddleware = require("./middlewares/authMiddleware");
+const roleMiddleware=require("./middlewares/roleMiddleware");
 const cors = require("cors");
 
 dotenv.config(); // Load environment variables
@@ -30,7 +31,7 @@ app.use("/auth", authRoutes);
 app.use("/auth", googleAuthRoutes);
 
 //  Protected Route
-app.get("/profile", authMiddleware, (req, res) => {
+app.get("/profile", authMiddleware,roleMiddleware(["admin"]),(req, res) => {
     res.send("hello profile with protected");
 });
 
