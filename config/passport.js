@@ -9,7 +9,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `${process.env.BACKEND_URL}/auth/google/callback`, // Use env variable for deployment
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (profile, done) => {
       try {
         let user = await User.findOne({ googleId: profile.id });
 

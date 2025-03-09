@@ -69,8 +69,8 @@ module.exports.logout = async (req, res) => {
         res.cookie("auth_token", "", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "None" : "Strict",
-            expires: new Date(0) // Expire the cookie immediately
+            sameSite:"None",
+            maxAge: 0, // Expire the cookie immediately
         });
 
         res.status(200).json({ message: "Logout successful" });

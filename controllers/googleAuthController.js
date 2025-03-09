@@ -20,15 +20,4 @@ const googleAuthSuccess = (req, res) => {
   res.redirect(`${process.env.FRONTEND_URL}/profile`); // Redirect user to frontend
 };
 
-const logout = (req, res) => {
-  res.cookie("auth_token", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    maxAge: 0, // Immediately expire the cookie
-  });
-
-  res.json({ success: true, message: "Logged out successfully" });
-};
-
-module.exports = { googleAuthSuccess, logout };
+module.exports = { googleAuthSuccess};
