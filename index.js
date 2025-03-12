@@ -10,6 +10,7 @@ const authorize=require("./middlewares/roleMiddleware");
 const cors = require("cors");
 const coachRoutes=require("./routes/coachRoutes");
 const adminRoutes=require("./routes/adminRoutes");
+const organizerRoutes=require("./routes/organizerRoutes");
 
 dotenv.config(); // Load environment variables
 
@@ -30,14 +31,16 @@ app.use(passport.initialize()); // Initialize Passport.js
 
 //  Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/auth", googleAuthRoutes);
+app.use("/auth", googleAuthRoutes);
 app.use("/api/coach",coachRoutes);
 app.use("/api/admin",adminRoutes);
+app.use("/api/organizer",organizerRoutes);
 
 //  Protected Route
 app.get("/profile", authenticate,authorize(["admin"]),(req, res) => {
     res.send("hello profile with protected");
 });
+
 
 //  Start Server
 const port = process.env.PORT || 5000;
