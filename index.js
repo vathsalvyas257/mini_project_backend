@@ -11,6 +11,7 @@ const cors = require("cors");
 const coachRoutes=require("./routes/coachRoutes");
 const adminRoutes=require("./routes/adminRoutes");
 const organizerRoutes=require("./routes/organizerRoutes");
+const tournamentRoutes=require("./routes/tournamentRoutes")
 
 dotenv.config(); // Load environment variables
 
@@ -35,6 +36,7 @@ app.use("/auth", googleAuthRoutes);
 app.use("/api/coach",coachRoutes);
 app.use("/api/admin",adminRoutes);
 app.use("/api/organizer",organizerRoutes);
+app.use("/api/tournament",tournamentRoutes)
 
 //  Protected Route
 app.get("/profile", authenticate,authorize(["admin"]),(req, res) => {
