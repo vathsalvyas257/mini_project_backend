@@ -9,17 +9,12 @@ exports.addNews = async (req, res) => {
       if (!title || !content || !req.file) {
         return res.status(400).json({ message: "All fields are required" });
       }
-  
-      // Convert image to Base64 (for storing as a string)
-      const imageBase64 = req.file.buffer.toString("base64");
-      console.log(req.user.userId);
-  
       // Create news object and save to DB
       const news = new News({
         title,
         content,
-        image: imageBase64,
-        createdBy: req.user.userId, // Who posted the news
+        image: req.file.path, //contain the cloudinary url for the image
+        createdBy: req.user.userId, // Who posted the news ,this is from the req.body after login we add user to the req
       });
   
       await news.save();
@@ -59,8 +54,8 @@ exports.updateNews = async (req, res) => {
 
     // Check if a new image is uploaded
     if (req.file) {
-      // Convert new image to Base64
-      news.image = req.file.buffer.toString("base64");
+      // cloudinary image url 
+      news.image = req.file.path;
     }
 
     // Update title and content if provided

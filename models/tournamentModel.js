@@ -17,6 +17,5 @@ const tournamentSchema = new mongoose.Schema({
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Organizer/Admin
 }, { timestamps: true });
 
-
-const Tournament = mongoose.model("Tournament", tournamentSchema);
+const Tournament = mongoose.models.Tournament || mongoose.model("Tournament", tournamentSchema);
 module.exports = Tournament;

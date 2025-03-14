@@ -1,13 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const {assignOrganiserByEmail } = require("../controllers/coachController");
+const coachController= require("../controllers/coachController");
 const authenticate=require("../middlewares/authMiddleware");
 const authorize=require("../middlewares/roleMiddleware");
-
-//get assign organizer form 
-router.get("/assign-organizer",authenticate,authorize(["coach"]),(req,res)=>{res.send("assign organizzer form is displayed here")});
+const { upload } = require("../config/cloudinary");
 
 // Only coach can assign organisers
-router.put("/assign-organizer", authenticate, authorize(["coach"]), assignOrganiserByEmail);
+// router.put("/assign-organizer", authenticate, authorize(["coach"]), coachController.assignOrganiserByEmail);
+
+// coach can create team
+router.post("/create-team",authenticate,authorize(["coach"]),upload.single("teamLogo"),coachController.createTeam);
+
+//view all the coach teams
+router.get("/view-myteams",authenticate,authorize(["coach"]),coachController.getCoachTeams);
+
+//delete team
+router.delete("/delete/:teamId",authenticate,authorize(["coach"]),coachController.deleteCoachTeam);
+
 
 module.exports = router;

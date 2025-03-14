@@ -3,9 +3,7 @@ const router=express.Router();
 const authenticate=require("../middlewares/authMiddleware");
 const authorize=require("../middlewares/roleMiddleware");
 const tournamentController=require("../controllers/tournamentController");
-const multer=require("multer");
-const storage=multer.memoryStorage();
-const upload=multer({storage});
+const {upload}=require("../config/cloudinary");
 
 //create tournament
 router.post("/create",authenticate,authorize(["admin","organizer"]),upload.single("image"),tournamentController.createTournament)
@@ -21,5 +19,9 @@ router.put("/update/:id",authenticate,authorize(["admin","organizer"]),upload.si
 
 //delete tournament 
 router.delete("/delete/:id",authenticate,authorize(["admin","organizer"]),tournamentController.deleteTournament);
+
+//register tournament
+router.post("/register/:tournamentId/:teamId",authenticate,authorize(["coach"]),tournamentController.registerTeam);
+
 
 module.exports=router;

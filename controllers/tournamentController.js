@@ -1,4 +1,6 @@
-const Tournament = require("../models/TournamentModel");
+const Tournament=require("../models/tournamentModel");
+const Team=require("../models/teamModel");
+
 
 //  Create a New Tournament (Admin/Organizer)
 exports.createTournament = async (req, res) => {
@@ -6,12 +8,12 @@ exports.createTournament = async (req, res) => {
         const { title, sportType, description, startDate } = req.body;
         const createdBy = req.user.userId;
 
-        let imageBase64 = "";
+        let logo="";
         if (req.file) {
-            imageBase64 = req.file.buffer.toString("base64"); // Convert image to Base64
+            logo=req.file.path;
         }
 
-        const newTournament = new Tournament({ title, sportType, description, startDate, image: imageBase64, createdBy });
+        const newTournament = new Tournament({ title, sportType, description, startDate, image:logo, createdBy });
         await newTournament.save();
 
         res.status(201).json({ success: true, message: "Tournament created successfully", tournament: newTournament });
@@ -51,9 +53,9 @@ exports.updateTournament= async (req, res) => {
 
         let updateFields = {};
 
-        // Check if a new image is uploaded and convert to Base64
+        // Check if a new image is uploaded and upload cloudinary string
         if (req.file) {
-            updateFields.image = req.file.buffer.toString("base64");
+            updateFields.image=req.file.path           
         }
 
         // Update fields if provided
@@ -100,3 +102,58 @@ exports.deleteTournament = async (req, res) => {
     }
 };
 
+//coach register his team for a tournament
+exports.registerTeam = async (req, res) => {
+    try {
+      const { tournamentId, teamId } = req.params;
+      const coachId = req.user.userId; // Authenticated coach ID
+      console.log(coachId);
+      console.log(teamId)
+ 
+      // Ensure the team belongs to the coach
+      const team = await Team.findOne({ _id: teamId, coach:coachId });
+      console.log(team);
+      if (!team) {
+        return res.status(403).json({ message: "You can only register your own teams" });
+      }
+ 
+      // Ensure the tournament exists
+      const tournament = await Tournament.findById(tournamentId);
+      if (!tournament) {
+        return res.status(404).json({ message: "Tournament not found" });
+      }
+      
+       // Ensure the team and tournament have the same sport type
+       if (team.sportType !== tournament.sportType) {
+        return res.status(400).json({ message: "Team and tournament sport types do not match" });
+    }
+ 
+      // Check if the team is already registered
+      const isAlreadyRegistered = tournament.registeredTeams.some(
+        (registered) => registered.team.toString() === teamId
+      );
+ 
+      if (isAlreadyRegistered) {
+        return res.status(400).json({ message: "Team is already registered for this tournament" });
+      }
+ 
+      // Add team to tournament's registeredTeams
+      tournament.registeredTeams.push({
+        team: teamId,
+        status: "Pending",
+      });
+ 
+      await tournament.save();
+ 
+      // Populate the team details before sending the response
+      const updatedTournament = await Tournament.findById(tournamentId)
+        .populate("registeredTeams.team", "teamName");
+ 
+      res.status(201).json({ message: "Team registered successfully!", tournament: updatedTournament });
+ 
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+ };
+ 
