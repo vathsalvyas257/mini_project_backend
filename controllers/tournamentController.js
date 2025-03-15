@@ -1,18 +1,23 @@
 const Tournament=require("../models/tournamentModel");
 const Team=require("../models/teamModel");
+const tournamentValidationSchema = require("../validation/tournamentValidationSchema");
 
 
 //  Create a New Tournament (Admin/Organizer)
 exports.createTournament = async (req, res) => {
     try {
+        //schema validation
+        const {error}=tournamentValidationSchema.validate(req.body,{abortEarly:false});
+        if(error){
+            return res.status(400).json({errors:error.details.map(err=>err.message)});
+        }
         const { title, sportType, description, startDate } = req.body;
         const createdBy = req.user.userId;
-
+        
         let logo="";
         if (req.file) {
             logo=req.file.path;
         }
-
         const newTournament = new Tournament({ title, sportType, description, startDate, image:logo, createdBy });
         await newTournament.save();
 

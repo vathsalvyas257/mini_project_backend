@@ -1,14 +1,17 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const userValidationSchema=require("../validation/userValidationSchema");
 
 module.exports.signup = async (req, res) => {
     try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({ error: "Email and password are required" });
+        // Validate request body using Joi schema
+        const { error } = userValidationSchema.validate(req.body, { abortEarly: false });
+        if (error) {
+            return res.status(400).json({ errors: error.details.map(err => err.message) });
         }
+
+        const { email, password } = req.body;
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -28,7 +31,8 @@ module.exports.signup = async (req, res) => {
         console.error("Signup Error:", error);
         res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
-};
+}
+
 
 module.exports.login = async (req, res) => {
     try {
