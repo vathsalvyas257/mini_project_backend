@@ -21,10 +21,13 @@ const app = express();
 connectDB();
 
 //  Middleware (in correct order)
+console.log("CORS Origin:", process.env.FRONTEND_URL);
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true
-}));
+    origin: `${process.env.FRONTEND_URL}`, // frontend URL
+    credentials: true,
+  }));
+
 app.use(express.json()); // Parse JSON
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use(cookieParser()); // Parse cookies
