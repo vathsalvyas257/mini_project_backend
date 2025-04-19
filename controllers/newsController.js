@@ -1,5 +1,16 @@
 const News = require("../models/newsModel");
 
+//view news
+exports.viewNews = async (req, res) => {
+  try {
+    const news = await News.find().sort({ createdAt: -1 }); // latest first
+    res.status(200).json({ success: true, news });
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch news." });
+  }
+};
+
 // Add news (Admin & Organiser)
 exports.addNews = async (req, res) => {
     try {

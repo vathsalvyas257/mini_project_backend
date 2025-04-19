@@ -5,6 +5,8 @@ const authorize=require("../middlewares/roleMiddleware");
 const newsController=require("../controllers/newsController");
 const {upload}=require("../config/cloudinary");
 
+//view all news 
+router.get("/view",newsController.viewNews);
 
 //organizer and admin can create news 
 router.post("/addnews", authenticate,authorize(["organizer","admin"]),upload.single("image"),newsController.addNews);
