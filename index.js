@@ -11,7 +11,8 @@ const cors = require("cors");
 const coachRoutes=require("./routes/coachRoutes");
 const adminRoutes=require("./routes/adminRoutes");
 const newsRoutes=require("./routes/newsRoutes");
-const tournamentRoutes=require("./routes/tournamentRoutes")
+const tournamentRoutes=require("./routes/tournamentRoutes");
+const userRoutes=require("./routes/userRoutes");
 
 dotenv.config(); // Load environment variables
 
@@ -35,6 +36,7 @@ app.use(passport.initialize()); // Initialize Passport.js
 
 //  Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/user",userRoutes);
 app.use("/auth", googleAuthRoutes);
 app.use("/api/coach",coachRoutes);
 app.use("/api/admin",adminRoutes);

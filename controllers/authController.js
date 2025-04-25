@@ -36,38 +36,53 @@ module.exports.signup = async (req, res) => {
 
 module.exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
-
-        // Check if user exists
-        const user = await User.findOne({ email });
-        if (!user) { 
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        // Compare password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
-
-        // Generate JWT token
-        const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-        // Secure Cookie Settings
-        res.cookie("auth_token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Secure in production
-            sameSite: process.env.NODE_ENV === "production" ? "None" : "Strict", // Allow cross-site cookies in production
-            maxAge: 3600000, // 1 hour expiry
-        });
-
-        res.status(200).json({ message: "Login successful" });
+      const { email, password } = req.body;
+  
+      // Check if user exists
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // Compare password
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Invalid credentials" });
+      }
+  
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user._id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
+  
+      // Secure Cookie Settings
+      res.cookie("auth_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Strict",
+        maxAge: 3600000,
+      });
+  
+      // Send back user info (without password)
+      const { _id, name, role } = user;
+  
+      res.status(200).json({
+        message: "Login successful",
+        user: {
+          id: _id,
+          name,
+          email,
+          role,
+        },
+      });
     } catch (error) {
-        console.error("Login Error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+      console.error("Login Error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-};
-
+  };
+  
 module.exports.logout = async (req, res) => {
     try {
         res.cookie("auth_token", "", {

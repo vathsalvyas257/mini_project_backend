@@ -55,29 +55,35 @@ exports.deleteNews = async (req, res) => {
 exports.updateNews = async (req, res) => {
   try {
     const { id } = req.params;
-    const {content} = req.body;
+    const { title, content } = req.body;
 
-    // Find existing news
     let news = await News.findById(id);
     if (!news) {
       return res.status(404).json({ message: "News not found" });
     }
 
-    // Check if a new image is uploaded
+    // Update fields if provided
+    if (title) news.title = title;
+    if (content) news.content = content;
+    
+    // Handle image upload if present
     if (req.file) {
-      // cloudinary image url 
-      news.image = req.file.path;
+      news.image = req.file.path; // or your cloudinary URL logic
     }
 
-    // Update title and content if provided
-    if (content) news.content = content;
-
-    // Save the updated news
     await news.save();
 
-    res.status(200).json({ message: "News updated successfully", news });
+    res.status(200).json({ 
+      success: true,
+      message: "News updated successfully", 
+      news 
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ 
+      success: false,
+      message: "Server error", 
+      error: error.message 
+    });
   }
 };

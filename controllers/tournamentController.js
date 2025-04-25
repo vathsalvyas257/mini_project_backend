@@ -6,27 +6,52 @@ const tournamentValidationSchema = require("../validation/tournamentValidationSc
 //  Create a New Tournament (Admin/Organizer)
 exports.createTournament = async (req, res) => {
     try {
-        //schema validation
-        const {error}=tournamentValidationSchema.validate(req.body,{abortEarly:false});
-        if(error){
-            return res.status(400).json({errors:error.details.map(err=>err.message)});
-        }
-        const { title, sportType, description, startDate } = req.body;
-        const createdBy = req.user.userId;
-        
-        let logo="";
-        if (req.file) {
-            logo=req.file.path;
-        }
-        const newTournament = new Tournament({ title, sportType, description, startDate, image:logo, createdBy });
-        await newTournament.save();
-
-        res.status(201).json({ success: true, message: "Tournament created successfully", tournament: newTournament });
+      // Debug: Log incoming request data
+      console.log("Request body:", req.body);
+      console.log("Request file:", req.file);
+  
+      // Validate required fields
+      if (!req.body.title || !req.body.startDate || !req.body.sportType) {
+        return res.status(400).json({
+          success: false,
+          message: "Title, startDate, and sportType are required fields"
+        });
+      }
+  
+      const { title, sportType, description, startDate } = req.body;
+      const createdBy = req.user.userId;
+      
+      let logo = "";
+      if (req.file) {
+        logo = req.file.path;
+      }
+  
+      const newTournament = new Tournament({ 
+        title, 
+        sportType, 
+        description, 
+        startDate, 
+        image: logo, 
+        createdBy 
+      });
+  
+      await newTournament.save();
+  
+      res.status(201).json({ 
+        success: true, 
+        message: "Tournament created successfully", 
+        tournament: newTournament 
+      });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error creating tournament", error: error.message });
+      console.error("Error creating tournament:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error creating tournament", 
+        error: error.message 
+      });
     }
-};
-
+  };
+  
 //fetch all tournaments
 exports.getAllTournaments = async (req, res) => {
     try {
