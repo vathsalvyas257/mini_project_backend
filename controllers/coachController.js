@@ -90,7 +90,7 @@ exports.getCoachTeams = async (req, res) => {
        const coachId = req.user.userId; // Authenticated coach ID
 
        // Fetch all teams where the logged-in user is the coach
-       const teams = await Team.find({ coach: coachId }).select("teamName sportType");
+       const teams = await Team.find({ coach: coachId }).select("teamName sportType teamLogo players");
 
        res.status(200).json({ teams });
    } catch (error) {

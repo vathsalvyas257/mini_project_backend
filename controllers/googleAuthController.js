@@ -5,8 +5,8 @@ const googleAuthSuccess = (req, res) => {
     return res.status(401).json({ success: false, message: "Authentication failed" });
   }
 
-  // Generate JWT
-  const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  // Generate JWT with 'userId'
+  const token = jwt.sign({ userId: req.user._id ,role: req.user.role}, process.env.JWT_SECRET, { expiresIn: "1h" });
 
   // Set JWT cookie
   res.cookie("auth_token", token, {
@@ -18,8 +18,8 @@ const googleAuthSuccess = (req, res) => {
 
   console.log("Cookie set successfully");
 
-  // Redirect to auth success page to handle Redux auth update
   res.redirect(`${process.env.FRONTEND_URL}/auth/success`);
 };
+
 
 module.exports = { googleAuthSuccess};
