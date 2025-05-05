@@ -187,3 +187,40 @@ exports.registerTeam = async (req, res) => {
     }
  };
  
+ exports.getTournamentTeams = async (req, res) => {
+  try {
+    const tournament = await Tournament.findById(req.params.id)
+      .populate({
+        path: "registeredTeams.team",
+        select: "teamName teamLogo"
+      });
+
+    if (!tournament) return res.status(404).json({ message: "Tournament not found" });
+
+    res.json(tournament.registeredTeams);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.updateTeamStatus=async (req,res)=>{
+  const { status } = req.body; // status = "Accepted" or "Rejected"
+  try {
+      const tournament = await Tournament.findById(req.params.tournamentId);
+      if (!tournament) return res.status(404).json({ message: "Tournament not found" });
+
+      const teamEntry = tournament.registeredTeams.find(
+          (entry) => entry.team.toString() === req.params.teamId
+      );
+
+      if (!teamEntry) return res.status(404).json({ message: "Team not registered" });
+
+      teamEntry.status = status;
+      await tournament.save();
+
+      res.json({ message: `Team ${status.toLowerCase()} successfully.` });
+  } catch (err) {
+      res.status(500).json({ message: err.message });
+  }
+
+}

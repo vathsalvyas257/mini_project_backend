@@ -23,5 +23,11 @@ router.delete("/delete/:id",authenticate,authorize(["admin","organizer"]),tourna
 //register tournament
 router.post("/register/:tournamentId/:teamId",authenticate,authorize(["coach"]),tournamentController.registerTeam);
 
+//get tournement teams 
+router.get('/:id/teams',authenticate,tournamentController.getTournamentTeams);
+
+//update team status
+router.patch("/:tournamentId/teams/:teamId",authenticate,tournamentController.updateTeamStatus);
+
 
 module.exports=router;
