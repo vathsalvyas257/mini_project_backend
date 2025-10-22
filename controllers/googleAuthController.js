@@ -18,7 +18,7 @@ const googleAuthSuccess = (req, res) => {
 
   console.log("Cookie set successfully");
 
-  res.redirect(`${process.env.FRONTEND_URL}/auth/success`);
+  res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
 };
 
 
